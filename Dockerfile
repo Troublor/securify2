@@ -30,9 +30,10 @@ RUN apt-get update && apt-get -y install\
 	curl
 
 # install the required solc version
-RUN curl -L https://github.com/ethereum/solidity/releases/download/v$SOLC/solc-static-linux > /usr/bin/solc-$SOLC && \
-    chmod +x /usr/bin/solc-$SOLC && \
-    ln -s /usr/bin/solc-$SOLC /usr/local/bin/solc
+# RUN curl -L https://github.com/ethereum/solidity/releases/download/v$SOLC/solc-static-linux > /usr/bin/solc-$SOLC && \
+#     chmod +x /usr/bin/solc-$SOLC && \
+#     ln -s /usr/bin/solc-$SOLC /usr/local/bin/solc
+RUN python3.7 -m pip install solc-select
 
 COPY requirements.txt /requirements.txt
 
@@ -56,8 +57,12 @@ RUN cd /sec/securify/staticanalysis/souffle_analysis && \
 
 ENV LD_LIBRARY_PATH /sec/securify/staticanalysis/libfunctors
 
+RUN solc-select install ${SOLC}
+ENV SOLC_VERSION $SOLC
+
 # Check that everything works and create a cache of the available patterns
 # Should be removed
 RUN cd /sec/securify/ && securify staticanalysis/testContract.sol
 
-ENTRYPOINT ["python3.7", "securify/__main__.py"]
+RUN chmod +x /sec/analyze.sh
+ENTRYPOINT ["/sec/analyze.sh"]
