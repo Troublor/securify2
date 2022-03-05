@@ -60,6 +60,8 @@ ENV LD_LIBRARY_PATH /sec/securify/staticanalysis/libfunctors
 RUN solc-select install ${SOLC}
 ENV SOLC_VERSION $SOLC
 
+RUN solc-select install all
+
 # Check that everything works and create a cache of the available patterns
 # Should be removed
 RUN cd /sec/securify/ && securify staticanalysis/testContract.sol
